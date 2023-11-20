@@ -69,6 +69,7 @@ class Square {
                         Square.element.style.bottom = Square.position[1] - Square.size[1] / 2 + 'px'
 
                         if (initialY >= Square.size[1]) {
+                            // console.log("stop")
                             Square.bounce(initialY, speed)
                         }
                         clearInterval(interval)
@@ -93,6 +94,7 @@ class Square {
                     Square.position[1] += initialSpeed;
                     Square.element.style.bottom = Square.position[1] - Square.size[1] / 2 + 'px'
                 } else {
+                    // console.log("Stop")
                     Square.fall(limit)
                     clearInterval(interval)
                 }
