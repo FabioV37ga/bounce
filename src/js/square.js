@@ -7,8 +7,12 @@ class Square {
     static hasBounced = false;
     static hasEnergy = false;
     static isBouncing = false;
+    static bounceAmount = 0;
+    static bounceAudio = new Audio('src/wav/bounce.wav')
 
     static hold() {
+        Square.bounceAmount = 0;
+        Square.element.parentElement.children[0].textContent = '0'
         Square.hasEnergy = true;
         Square.isHolding = true
         console.log('Holding at: [' + Input.mousePos[0] + ', ' + Input.mousePos[1] + ']')
@@ -76,12 +80,15 @@ class Square {
                     } else {
                         Square.position[1] = 30;
                         Square.element.style.bottom = Square.position[1] - Square.size[1] / 2 + 'px'
-
                         if (initialY >= Square.size[1]) {
                             // console.log("stop")
                             Square.isBouncing = true;
                             Square.bounceY(initialY, speed)
+
                         } else {
+                            // breakpoint
+                            Square.bounceAmount++;
+                            Square.alert()
                             Square.hasEnergy = false;
                             Square.isBouncing = false;
                             this.hasBounced = false;
@@ -98,6 +105,8 @@ class Square {
     }
 
     static bounceY(limitY, speed) {
+        Square.bounceAmount++
+        Square.alert()
         Square.hasBounced = true;
         console.log("Bounce parameters: Max height: " + limitY)
         var limit = limitY / 2;
@@ -120,6 +129,8 @@ class Square {
     }
 
     static bounceX() {
+        Square.bounceAmount++
+        Square.alert()
         // console.log(Square.currentDirection)
         Square.currentDirection == 'r' ? Square.currentDirection = 'l' : Square.currentDirection = 'r';
         console.log("call me " + Square.currentDirection)
@@ -163,6 +174,17 @@ class Square {
                 clearInterval(interval)
             }
         }, 1);
+    }
 
+    static alert() {
+        Square.bounceAudio.paused ? Square.bounceAudio.play() : Square.bounceAudio.currentTime = 0;
+        Square.element.parentElement.children[0].textContent = Square.bounceAmount
+        function random_rgb() {
+            var o = Math.round, r = Math.random, s = 255;
+            return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ')';
+        }
+
+        var color = random_rgb();
+        Square.element.style.background = color
     }
 }
