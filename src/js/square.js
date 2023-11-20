@@ -1,6 +1,7 @@
 class Square {
     static elemento = document.querySelector(".square");
     static isHolding = false
+    static position = [0, 0];
 
     static hold() {
         Square.isHolding = true
@@ -10,6 +11,7 @@ class Square {
 
     static release() {
         Square.isHolding = false
+        Square.fall();
         console.log(Input.mousePos)
         console.log("releasing...")
     }
@@ -26,9 +28,9 @@ class Square {
             }
             if (Input.mousePos[0] - 30 >= 0 && Input.mousePos[0] <= 570) {
                 this.elemento.style.left = Input.mousePos[0] - 30 + 'px'
+                Square.position[0] = Input.mousePos[0]
             }
         }
-
     }
 
     static moveY(direction) {
@@ -42,10 +44,29 @@ class Square {
                     break;
             }
             if (Input.mousePos[1] + 30 <= 600 && Input.mousePos[1] >= 30) {
-
                 this.elemento.style.bottom = Input.mousePos[1] - 30 + 'px'
+                Square.position[1] = Input.mousePos[1]
             }
         }
+    }
 
+    static fall() {
+        var speed = 0;
+        var interval = setInterval(() => {
+            if (!this.isHolding) {
+                speed += 0.025;
+                Square.position[1] -= speed;
+
+                if (parseInt(this.elemento.style.bottom.split("px")[0]) > 0) {
+                    this.elemento.style.bottom = Square.position[1] - 30 + 'px'
+                } else {
+                    this.elemento.style.bottom = '0px';
+                    clearInterval(interval);
+                    console.log(Square.position)
+                }
+            } else { 
+                clearInterval(interval) 
+            }
+        }, 1);
     }
 }

@@ -5,7 +5,7 @@ class Input {
         Input.mouseDown();
         Input.mouseUp();
         Input.mouseMove();
-        Input.mouseOut();
+        Input.mouseLeave();
     }
 
     static mouseDown() {
@@ -42,9 +42,9 @@ class Input {
         })
     }
 
-    static mouseOut() {
+    static mouseLeave() {
         var area = document.querySelector(".area");
-        area.addEventListener("mouseout", () => {
+        area.addEventListener("mouseleave", function(event){
             Square.release()
         })
     }
