@@ -16,8 +16,8 @@ class Input {
     }
 
     static mouseUp() {
-        Square.element.addEventListener("mouseup", () => {
-            Square.release()
+        Square.element.parentElement.addEventListener("mouseup", () => {
+            Square.isHolding ? Square.release() : null;
         })
     }
 

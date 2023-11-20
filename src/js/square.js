@@ -3,6 +3,9 @@ class Square {
     static isHolding = false;
     static size = [60, 60] // width - height
     static position = [0, 0] // x - y
+    static currentDirection;
+    static hasBounced = false;
+    static isBouncing = false;
 
     static hold() {
         Square.isHolding = true
@@ -11,8 +14,10 @@ class Square {
 
     static release() {
         Square.isHolding = false
-        console.log("releasing at: [" + Input.mousePos[0] + ', ' + Input.mousePos[1] + ']')
+        console.log("releasing at: [" + Input.mousePos[0] + ', ' + Input.mousePos[1] + '], at ' + Square.currentDirection + ' direction')
         Square.fall();
+        Square.inertia(Square.currentDirection);
+
     }
 
     static moveX(direction) {
@@ -20,9 +25,11 @@ class Square {
             switch (direction) {
                 case "r":
                     // console.log("moving x axis (right)")
+                    Square.currentDirection = 'r';
                     break;
                 case "l":
                     // console.log("moving x axis (left)")
+                    Square.currentDirection = 'l';
                     break;
             }
             // Limitador de movimentação do quadrado no eixo x
@@ -70,7 +77,11 @@ class Square {
 
                         if (initialY >= Square.size[1]) {
                             // console.log("stop")
-                            Square.bounce(initialY, speed)
+                            Square.isBouncing = true;
+                            Square.bounceY(initialY, speed)
+                        } else {
+                            Square.isBouncing = false;
+                            this.hasBounced = false;
                         }
                         clearInterval(interval)
                     }
@@ -83,7 +94,8 @@ class Square {
         }, 1);
     }
 
-    static bounce(limitY, speed) {
+    static bounceY(limitY, speed) {
+        Square.hasBounced = true;
         console.log("Bounce parameters: Max height: " + limitY)
         var limit = limitY / 2;
         var initialSpeed = speed;
@@ -104,4 +116,50 @@ class Square {
         }, 1);
     }
 
+    static bounceX() {
+        // console.log(Square.currentDirection)
+        Square.currentDirection == 'r' ? Square.currentDirection = 'l' : Square.currentDirection = 'r';
+        console.log("call me " + Square.currentDirection)
+        Square.inertia(Square.currentDirection)
+    }
+
+    static inertia(direction, forca) {
+        var maxDistance = 0;
+        var interval = setInterval(() => {
+            if (!Square.isHolding) {
+                switch (direction) {
+                    case 'r':
+                        console.log("inertia " + direction)
+                        // console.log(Square.hasBounced)
+                        if (Square.hasBounced && !Square.isBouncing) {
+                            console.log("clear")
+                            clearInterval(interval)
+                        }
+                        if (Square.position[0] < 600 - Square.size[0]) {
+                            Square.position[0]++
+                        } else {
+                            Square.bounceX()
+                            clearInterval(interval);
+                        }
+                        Square.element.style.left = Square.position[0] + 'px'
+                        break;
+                    case 'l':
+                        if (Square.hasBounced && !Square.isBouncing) {
+                            clearInterval(interval)
+                        }
+                        if (Square.position[0] > 0) {
+                            Square.position[0]--
+                        } else {
+                            Square.bounceX()
+                            clearInterval(interval);
+                        }
+                        Square.element.style.left = Square.position[0] + 'px'
+                        break;
+                }
+            } else {
+                clearInterval(interval)
+            }
+        }, 1);
+
+    }
 }
