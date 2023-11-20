@@ -105,63 +105,82 @@ class Square {
     }
 
     static bounceY(limitY, speed) {
+        // Incrementa numero de bounces
         Square.bounceAmount++
+        // Emite alerta de bounce
         Square.alert()
+        // Define hasBounced = true;
         Square.hasBounced = true;
+
+        // Log
         console.log("Bounce parameters: Max height: " + limitY)
+
+        // O bounce subirá até metade da altura máxima da execução anterior
         var limit = limitY / 2;
+        // A velocidade também é baseada na execução anterior
         var initialSpeed = speed;
+
+        // Intervalo
         var interval = setInterval(() => {
+            // Equanto o usuário não estiver segurando
             if (!Square.isHolding) {
+                // Decrementa velocidade (desaceleração)
                 initialSpeed -= 0.025;
+                // Enquanto ainda não atingir o limite
                 if (Square.position[1] - Square.size[1] / 2 <= limit) {
+                    // Incrementa posição de acordo com a velocidade
                     Square.position[1] += initialSpeed;
+                    // Estiliza elemento a cada execução
                     Square.element.style.bottom = Square.position[1] - Square.size[1] / 2 + 'px'
                 } else {
-                    // console.log("Stop")
+                    // Quando atingir o limite, volta a cair
                     Square.fall(limit)
+                    // Para o intervalo
                     clearInterval(interval)
                 }
             } else {
+                // Para o intervalo (Se o usuário segurar)
                 clearInterval(interval)
             }
         }, 1);
     }
 
     static bounceX() {
+        // Trata position
+        Square.position[0] += Square.size[0] / 2
+        // Incrementa o numero de bounces
         Square.bounceAmount++
+        // Emite alerta de bounce
         Square.alert()
-        // console.log(Square.currentDirection)
+        // Troca a direção do eixo X
         Square.currentDirection == 'r' ? Square.currentDirection = 'l' : Square.currentDirection = 'r';
-        console.log("call me " + Square.currentDirection)
+        // Liga novamente a inercia
         Square.inertia(Square.currentDirection)
     }
 
     static inertia(direction, forca) {
         var maxDistance = 0;
-        direction == 'l' ? Square.position[0] -= 30 : null;
+        // Trata position
+        Square.position[0] -= Square.size[0] / 2
+
         var interval = setInterval(() => {
+            // 
             if (!Square.isHolding && Square.hasEnergy) {
+                console.log("inertia " + direction)
+                // 
                 switch (direction) {
+                    // case RIGHT
                     case 'r':
-                        console.log("inertia " + direction)
-                        // console.log(Square.hasBounced)
-                        if (Square.hasBounced && !Square.isBouncing) {
-                            console.log("clear")
-                            clearInterval(interval)
-                        }
                         if (Square.position[0] < 600 - Square.size[0]) {
                             Square.position[0]++
                         } else {
                             Square.bounceX()
                             clearInterval(interval);
                         }
-                        Square.element.style.left = Square.position[0] +'px'
+                        Square.element.style.left = Square.position[0] + 'px'
                         break;
+                    // case LEFT
                     case 'l':
-                        if (Square.hasBounced && !Square.isBouncing) {
-                            clearInterval(interval)
-                        }
                         if (Square.position[0] > 0) {
                             Square.position[0]--
                         } else {
