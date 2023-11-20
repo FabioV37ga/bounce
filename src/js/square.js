@@ -1,19 +1,18 @@
 class Square {
-    static elemento = document.querySelector(".square");
-    static isHolding = false
-    static position = [0, 0];
+    static element = document.querySelector(".square")
+    static isHolding = false;
+    static size = [60, 60] // width - height
+    static position = [0, 0] // x - y
 
     static hold() {
         Square.isHolding = true
-        console.log(Input.mousePos)
-        console.log("holding...")
+        console.log('Holding at: [' + Input.mousePos[0] + ', ' + Input.mousePos[1] + ']')
     }
 
     static release() {
         Square.isHolding = false
+        console.log("releasing at: [" + Input.mousePos[0] + ', ' + Input.mousePos[1] + ']')
         Square.fall();
-        console.log(Input.mousePos)
-        console.log("releasing...")
     }
 
     static moveX(direction) {
@@ -26,8 +25,11 @@ class Square {
                     // console.log("moving x axis (left)")
                     break;
             }
-            if (Input.mousePos[0] - 30 >= 0 && Input.mousePos[0] <= 570) {
-                this.elemento.style.left = Input.mousePos[0] - 30 + 'px'
+            // Limitador de movimentação do quadrado no eixo x
+            if ((Input.mousePos[0] - Square.size[0] / 2) >= 0 &&
+                Input.mousePos[0] <= 600 - Square.size[0 / 2]) {
+                // estiliza o elemento a cada execução de moveX com novos valores de posição do eixo x
+                Square.element.style.left = Input.mousePos[0] - Square.size[0] / 2 + 'px'
                 Square.position[0] = Input.mousePos[0]
             }
         }
@@ -43,30 +45,65 @@ class Square {
                     // console.log("moving y axis (down)")
                     break;
             }
-            if (Input.mousePos[1] + 30 <= 600 && Input.mousePos[1] >= 30) {
-                this.elemento.style.bottom = Input.mousePos[1] - 30 + 'px'
+            if ((Input.mousePos[1] + Square.size[1] / 2) <= 600 &&
+                Input.mousePos[1] >= Square.size[1] / 2) {
+                Square.element.style.bottom = Input.mousePos[1] - Square.size[1] / 2 + 'px'
                 Square.position[1] = Input.mousePos[1]
             }
         }
     }
 
-    static fall() {
+    static fall(fromY) {
+        var initialY = fromY ? fromY : Input.mousePos[1]
         var speed = 0;
         var interval = setInterval(() => {
-            if (!this.isHolding) {
-                speed += 0.025;
-                Square.position[1] -= speed;
+            if (!Square.isHolding) {
+                if (Square.position[1] > 0) {
 
-                if (parseInt(this.elemento.style.bottom.split("px")[0]) > 0) {
-                    this.elemento.style.bottom = Square.position[1] - 30 + 'px'
+                    speed += 0.025;
+                    Square.position[1] -= speed;
+
+                    if (Square.position[1] > Square.size[1] / 2) {
+                        Square.element.style.bottom = Square.position[1] - Square.size[1] / 2 + 'px'
+
+                    } else {
+                        Square.position[1] = 30;
+                        Square.element.style.bottom = Square.position[1] - Square.size[1] / 2 + 'px'
+
+                        if (initialY >= Square.size[1]) {
+                            Square.bounce(initialY, speed)
+                        }
+                        clearInterval(interval)
+                    }
+
                 } else {
-                    this.elemento.style.bottom = '0px';
-                    clearInterval(interval);
-                    console.log(Square.position)
+                    clearInterval(interval)
                 }
-            } else { 
-                clearInterval(interval) 
+            } else {
+                clearInterval(interval)
             }
         }, 1);
     }
+
+    static bounce(limitY, speed) {
+        console.log("Bounce parameters: Max height: " + limitY)
+        var limit = limitY / 2;
+        var initialSpeed = speed;
+        var interval = setInterval(() => {
+            if (!Square.isHolding) {
+                if (Square.position[1] - Square.size[1] / 2 <= limit) {
+                    initialSpeed -= 0.025;
+                    Square.position[1] += initialSpeed;
+                    Square.element.style.bottom = Square.position[1] - Square.size[1] / 2 + 'px'
+                    // console.log(Square.position[1])
+                } else {
+                    Square.fall(limit)
+                    clearInterval(interval)
+                }
+            } else {
+                clearInterval(interval)
+            }
+        }, 1);
+    }
+
 }
