@@ -23,6 +23,7 @@
     background: red;
     user-select: none;
     border-radius: 50%;
+    border: 1px solid black;
     bottom: 0;
     left: 0;
 }

@@ -139,6 +139,7 @@ class Square {
 
     static inertia(direction, forca) {
         var maxDistance = 0;
+        direction == 'l' ? Square.position[0] -= 30 : null;
         var interval = setInterval(() => {
             if (!Square.isHolding && Square.hasEnergy) {
                 switch (direction) {
@@ -155,7 +156,7 @@ class Square {
                             Square.bounceX()
                             clearInterval(interval);
                         }
-                        Square.element.style.left = Square.position[0] + 'px'
+                        Square.element.style.left = Square.position[0] +'px'
                         break;
                     case 'l':
                         if (Square.hasBounced && !Square.isBouncing) {
