@@ -5,9 +5,11 @@ class Square {
     static position = [0, 0] // x - y
     static currentDirection;
     static hasBounced = false;
+    static hasEnergy = false;
     static isBouncing = false;
 
     static hold() {
+        Square.hasEnergy = true;
         Square.isHolding = true
         console.log('Holding at: [' + Input.mousePos[0] + ', ' + Input.mousePos[1] + ']')
     }
@@ -80,6 +82,7 @@ class Square {
                             Square.isBouncing = true;
                             Square.bounceY(initialY, speed)
                         } else {
+                            Square.hasEnergy = false;
                             Square.isBouncing = false;
                             this.hasBounced = false;
                         }
@@ -126,7 +129,7 @@ class Square {
     static inertia(direction, forca) {
         var maxDistance = 0;
         var interval = setInterval(() => {
-            if (!Square.isHolding) {
+            if (!Square.isHolding && Square.hasEnergy) {
                 switch (direction) {
                     case 'r':
                         console.log("inertia " + direction)
