@@ -27,7 +27,7 @@ class Square {
             }
             // Limitador de movimentação do quadrado no eixo x
             if ((Input.mousePos[0] - Square.size[0] / 2) >= 0 &&
-                Input.mousePos[0] <= 600 - Square.size[0 / 2]) {
+                Input.mousePos[0] <= 600 - Square.size[0] / 2) {
                 // estiliza o elemento a cada execução de moveX com novos valores de posição do eixo x
                 Square.element.style.left = Input.mousePos[0] - Square.size[0] / 2 + 'px'
                 Square.position[0] = Input.mousePos[0]
@@ -62,10 +62,8 @@ class Square {
 
                     speed += 0.025;
                     Square.position[1] -= speed;
-
                     if (Square.position[1] > Square.size[1] / 2) {
                         Square.element.style.bottom = Square.position[1] - Square.size[1] / 2 + 'px'
-
                     } else {
                         Square.position[1] = 30;
                         Square.element.style.bottom = Square.position[1] - Square.size[1] / 2 + 'px'
@@ -75,7 +73,6 @@ class Square {
                         }
                         clearInterval(interval)
                     }
-
                 } else {
                     clearInterval(interval)
                 }
@@ -91,11 +88,10 @@ class Square {
         var initialSpeed = speed;
         var interval = setInterval(() => {
             if (!Square.isHolding) {
+                initialSpeed -= 0.025;
                 if (Square.position[1] - Square.size[1] / 2 <= limit) {
-                    initialSpeed -= 0.025;
                     Square.position[1] += initialSpeed;
                     Square.element.style.bottom = Square.position[1] - Square.size[1] / 2 + 'px'
-                    // console.log(Square.position[1])
                 } else {
                     Square.fall(limit)
                     clearInterval(interval)
