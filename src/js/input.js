@@ -10,14 +10,14 @@ class Input {
     }
 
     static mouseDown() {
-        Square.element.addEventListener("mousedown", () => {
-            Square.hold()
+        Circle.element.addEventListener("mousedown", () => {
+            Circle.hold()
         })
     }
 
     static mouseUp() {
-        Square.element.parentElement.addEventListener("mouseup", () => {
-            Square.isHolding ? Square.release() : null;
+        Circle.element.parentElement.addEventListener("mouseup", () => {
+            Circle.isHolding ? Circle.release() : null;
         })
     }
 
@@ -32,12 +32,12 @@ class Input {
             // Determina, comparando a posição anterior com a nova, qual direção o usuário está movendo o mouse
             // eixo x
             if (newPos[0] != pos[0]) {
-                newPos[0] > pos[0] ? Square.moveX("r") : Square.moveX("l")
+                newPos[0] > pos[0] ? Circle.dragX('r') : Circle.dragX('l')
                 pos[0] = newPos[0];
             }
             // eixo y
             if (newPos[1] != pos[1]) {
-                newPos[1] < pos[1] ? Square.moveY("up") : Square.moveY("down")
+                newPos[1] < pos[1] ? Circle.dragY("up") : Circle.dragY("down")
                 pos[1] = newPos[1];
             }
             // Atribui coordenadas a this.mousePos[]
@@ -47,7 +47,7 @@ class Input {
 
     static mouseLeave() {
         this.area.addEventListener("mouseleave", function (event) {
-            Square.isHolding == true ? console.log("leaving...") + Square.release() : null;
+            Circle.isHolding == true ? console.log("leaving...") + Circle.release() : null;
         })
     }
 }
