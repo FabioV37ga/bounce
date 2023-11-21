@@ -8,6 +8,8 @@ class Circle {
     static trajectoryX = [0, 0, 0]
     static trajectoryY = [0, 0, 0]
     static currentDirection = ['', '']
+    static bounceAmount = 0;
+    static bounceAudio = new Audio('src/wav/bounce.wav')
 
     // Método hold → Quando o usuário segura o circulo
     static hold() {
@@ -169,6 +171,8 @@ class Circle {
     }
 
     static bounce(direction) {
+        this.alert()
+        console.log("alert")
         switch (direction) {
             case 'x':
                 Circle.currentDirection[0] = Circle.currentDirection[0] == 'r' ? 'l' : 'r'
@@ -181,5 +185,18 @@ class Circle {
 
                 break
         }
+    }
+
+    static alert() {
+        Circle.bounceAmount++;
+        Circle.bounceAudio.paused ? Circle.bounceAudio.play() : Circle.bounceAudio.currentTime = 0;
+        Circle.element.parentElement.children[0].textContent = Circle.bounceAmount
+        function random_rgb() {
+            var o = Math.round, r = Math.random, s = 255;
+            return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ')';
+        }
+
+        var color = random_rgb();
+        Circle.element.style.background = color
     }
 }
