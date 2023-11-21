@@ -20,7 +20,7 @@ class Circle {
         Circle.anchor[1] = Math.abs(Circle.position[1] - Input.mousePos[1]);
         // LOG
         Circle.getTrajectory()
-        console.log(this.anchor)
+        // console.log(this.anchor)
         console.log("hold")
     }
 
@@ -113,8 +113,8 @@ class Circle {
 
                 Circle.isHolding ? timeout() : null;
 
-            }, 5);
-            console.log(Circle.trajectoryX)
+            }, 10);
+            // console.log(Circle.trajectoryX)
         }
     }
 
@@ -139,7 +139,7 @@ class Circle {
                     Circle.element.style.left = Circle.position[0] + 'px'
                     speed > 0 ? speed -= 0.005 : clearInterval(interval);
                 }, 1);
-                console.log(speed)
+                console.log("Speed: " + speed)
             }
         }
 
@@ -149,16 +149,17 @@ class Circle {
         if (!Circle.isHolding) {
             // Adquire velocidade baseado nas posições anteriores
             var speed = Math.abs((Circle.trajectoryY[0] - Circle.trajectoryY[1]))
+            console.log('speeed ' + speed)
             speed = speed > 4 ? speed / 2 : speed
             speed = speed > 10 ? 10 : speed;
-            console.log('attention ' + speed)
+            // console.log('attention ' + speed)
             if (Circle.trajectoryY[0] > 0 &&
                 Circle.trajectoryY[1] > 0 &&
                 Circle.trajectoryY[2] > 0) {
                 var interval = setInterval(() => {
                     if (Circle.isHolding)
                         clearInterval(interval)
-                    console.log("teste")
+                    // console.log("teste")
                     if (Circle.currentDirection[1] == 'up')
                         Circle.position[1] < 540 ? Circle.position[1] += speed : this.bounce('y') + clearInterval(interval);
                     else {
@@ -167,14 +168,14 @@ class Circle {
                     Circle.element.style.bottom = Circle.position[1] + 'px'
                     speed > 0 ? speed -= 0.005 : clearInterval(interval);
                 }, 1);
-                console.log(speed)
+                // console.log(speed)
             }
         }
     }
 
     static bounce(direction) {
         this.alert()
-        console.log("alert")
+        // console.log("alert")
         switch (direction) {
             case 'x':
                 Circle.currentDirection[0] = Circle.currentDirection[0] == 'r' ? 'l' : 'r'
@@ -182,7 +183,7 @@ class Circle {
                 break
             case 'y':
                 Circle.currentDirection[1] = Circle.currentDirection[1] == 'up' ? 'down' : 'up'
-                console.log('aaaaaaaaaaaaaaa    ' + Circle.currentDirection[1])
+                // console.log('aaaaaaaaaaaaaaa    ' + Circle.currentDirection[1])
                 Circle.inertiaY(Circle.currentDirection[1])
 
                 break
