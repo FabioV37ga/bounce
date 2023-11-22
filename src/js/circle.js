@@ -10,9 +10,13 @@ class Circle {
     static currentDirection = ['', '']
     static bounceAmount = 0;
     static bounceAudio = new Audio('src/wav/bounce.wav')
+    static speed = [0, 0];
+    static unlimitedEnergy = true;
+    static enableGravity = false;
 
     // Método hold → Quando o usuário segura o circulo
     static hold() {
+        Circle.speed = [0, 0]
         // Define isHolding = true.
         Circle.isHolding = true;
         // Define Circle.anchor[0,1]. Esse é o ponto do circulo que lidera a movimentação.
@@ -30,8 +34,10 @@ class Circle {
         Circle.isHolding = false;
         // LOG
         console.log("release")
+        Circle.enableGravity == true ? Circle.gravityPull() : null 
         Circle.inertiaX()
         Circle.inertiaY()
+        console.log("speed (x,y): " + `[ ${Circle.speed[0]} , ${Circle.speed[1]} ]`)
     }
 
     // Método dragX → Quando o usuáro arrasta no eixo X
@@ -124,10 +130,13 @@ class Circle {
 
         if (!Circle.isHolding) {
             // Adquire velocidade baseado nas posições anteriores
-            console.log(Circle.trajectoryX)
-            var speed = Math.abs((Circle.trajectoryX[0] - Circle.trajectoryX[1]))
-            speed = speed > 4 ? speed / 2 : speed;
-            speed = speed > 10 ? 10 : speed;
+            if (Circle.unlimitedEnergy || Circle.speed[0] <= 0) {
+                Circle.speed[0] = Math.abs((Circle.trajectoryX[0] - Circle.trajectoryX[1]))
+                Circle.speed[0] = Circle.speed[0] > 4 ? Circle.speed[0] / 2 : Circle.speed[0];
+                Circle.speed[0] = Circle.speed[0] > 10 ? 10 : Circle.speed[0];
+            } else {
+                Circle.speed[0] = Circle.speed[0] ? Circle.speed[0] : Math.abs((Circle.trajectoryY[0] - Circle.trajectoryY[1]));
+            }
             if (Circle.trajectoryX[0] > 0 &&
                 Circle.trajectoryX[1] > 0 &&
                 Circle.trajectoryX[2] > 0) {
@@ -135,14 +144,13 @@ class Circle {
                     if (Circle.isHolding)
                         clearInterval(interval)
                     if (Circle.currentDirection[0] == 'r')
-                        Circle.position[0] < 540 ? Circle.position[0] += speed : this.bounce('x') + clearInterval(interval);
+                        Circle.position[0] < 540 ? Circle.position[0] += Circle.speed[0] : this.bounce('x') + clearInterval(interval);
                     else {
-                        Circle.position[0] > 0 ? Circle.position[0] -= speed : this.bounce('x') + clearInterval(interval);
+                        Circle.position[0] > 0 ? Circle.position[0] -= Circle.speed[0] : this.bounce('x') + clearInterval(interval);
                     }
                     Circle.element.style.left = Circle.position[0] + 'px'
-                    speed > 0 ? speed -= 0.005 : clearInterval(interval);
+                    Circle.speed[0] > 0 ? Circle.speed[0] -= 0.005 : clearInterval(interval);
                 }, 1);
-                console.log("Speed: " + speed)
             }
         }
 
@@ -150,12 +158,16 @@ class Circle {
 
     static inertiaY() {
         if (!Circle.isHolding) {
+            if (Circle.unlimitedEnergy || Circle.speed[1] <= 0) {
+                Circle.speed[1] = Math.abs((Circle.trajectoryY[0] - Circle.trajectoryY[1]))
+                // console.log('speeed ' + Circle.speed[1])
+                Circle.speed[1] = Circle.speed[1] > 4 ? Circle.speed[1] / 2 : Circle.speed[1]
+                Circle.speed[1] = Circle.speed[1] > 10 ? 10 : Circle.speed[1];
+            } else {
+                Circle.speed[1] = Circle.speed[1] ? Circle.speed[1] : Math.abs((Circle.trajectoryY[0] - Circle.trajectoryY[1]));
+            }
             // Adquire velocidade baseado nas posições anteriores
-            var speed = Math.abs((Circle.trajectoryY[0] - Circle.trajectoryY[1]))
-            console.log('speeed ' + speed)
-            speed = speed > 4 ? speed / 2 : speed
-            speed = speed > 10 ? 10 : speed;
-            // console.log('attention ' + speed)
+            // console.log('attention ' + Circle.speed[1])
             if (Circle.trajectoryY[0] > 0 &&
                 Circle.trajectoryY[1] > 0 &&
                 Circle.trajectoryY[2] > 0) {
@@ -164,15 +176,16 @@ class Circle {
                         clearInterval(interval)
                     // console.log("teste")
                     if (Circle.currentDirection[1] == 'up')
-                        Circle.position[1] < 540 ? Circle.position[1] += speed : this.bounce('y') + clearInterval(interval);
+                        Circle.position[1] < 540 ? Circle.position[1] += Circle.speed[1] : this.bounce('y') + clearInterval(interval);
                     else {
-                        Circle.position[1] > 0 ? Circle.position[1] -= speed : this.bounce('y') + clearInterval(interval);
+                        Circle.position[1] > 0 ? Circle.position[1] -= Circle.speed[1] : this.bounce('y') + clearInterval(interval);
                     }
                     Circle.element.style.bottom = Circle.position[1] + 'px'
-                    speed > 0 ? speed -= 0.005 : clearInterval(interval);
+                    Circle.speed[1] > 0 ? Circle.speed[1] -= 0.005 : console.log("cleared") + clearInterval(interval);
                 }, 1);
-                // console.log(speed)
             }
+        } else {
+
         }
     }
 
@@ -204,5 +217,32 @@ class Circle {
 
         var color = random_rgb();
         Circle.element.style.background = color
+    }
+
+    static slowDown() {
+        var interval = setInterval(() => {
+            Circle.speed[0] -= 0.01
+            Circle.speed[1] -= 0.01
+            Circle.speed[0] <= 0 ? clearInterval(interval) : null;
+            Circle.speed[1] <= 0 ? clearInterval(interval) : null;
+        }, 1);
+    }
+
+    static gravityPull() {
+        var speed = 0;
+        var interval = setInterval(() => {
+            if (!Circle.isHolding) {
+                Circle.enableGravity == true ? speed += 0.01 : clearInterval(interval);
+                console.log(speed)
+                if (Circle.position[1] > 0) {
+                    Circle.position[1] -= speed
+                } else {
+                    clearInterval(interval);
+                }
+                Circle.element.style.bottom = Circle.position[1] + 'px'
+            } else {
+                clearInterval(interval)
+            }
+        }, 1);
     }
 }

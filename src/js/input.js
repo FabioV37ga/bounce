@@ -7,6 +7,7 @@ class Input {
         Input.mouseUp();
         Input.mouseMove();
         Input.mouseLeave();
+        Input.options();
     }
 
     static mouseDown() {
@@ -48,6 +49,21 @@ class Input {
     static mouseLeave() {
         this.area.addEventListener("mouseleave", function (event) {
             Circle.isHolding == true ? console.log("leaving...") + Circle.release() : null;
+        })
+    }
+
+    static options() {
+        var unlimitedEnergy = document.querySelector("#unlimitedEnergy")
+        var enableGravity = document.querySelector("#enableGravity")
+
+        unlimitedEnergy.addEventListener("click", () => {
+            Circle.unlimitedEnergy = Circle.unlimitedEnergy == true ? false : true;
+        })
+
+        enableGravity.addEventListener("click", () => {
+            Circle.enableGravity = Circle.enableGravity == true ? false : true;
+            if (Circle.enableGravity)
+                Circle.gravityPull()
         })
     }
 }
