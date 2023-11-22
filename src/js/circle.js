@@ -10,6 +10,7 @@ class Circle {
     static currentDirection = ['', '']
     static bounceAmount = 0;
     static bounceAudio = new Audio('src/wav/bounce.wav')
+    static isBouncing = false;
     static speed = [0, 0];
     static unlimitedEnergy = true;
     static enableGravity = false;
@@ -19,6 +20,7 @@ class Circle {
         Circle.speed = [0, 0]
         // Define isHolding = true.
         Circle.isHolding = true;
+        Circle.isBouncing = false;
         // Define Circle.anchor[0,1]. Esse é o ponto do circulo que lidera a movimentação.
         Circle.anchor[0] = Math.abs(Circle.position[0] - Input.mousePos[0]);
         Circle.anchor[1] = Math.abs(Circle.position[1] - Input.mousePos[1]);
@@ -34,7 +36,7 @@ class Circle {
         Circle.isHolding = false;
         // LOG
         console.log("release")
-        Circle.enableGravity == true ? Circle.gravityPull() : null 
+        Circle.enableGravity == true ? Circle.gravityPull() : null
         Circle.inertiaX()
         Circle.inertiaY()
         console.log("speed (x,y): " + `[ ${Circle.speed[0]} , ${Circle.speed[1]} ]`)
@@ -131,11 +133,14 @@ class Circle {
         if (!Circle.isHolding) {
             // Adquire velocidade baseado nas posições anteriores
             if (Circle.unlimitedEnergy || Circle.speed[0] <= 0) {
-                Circle.speed[0] = Math.abs((Circle.trajectoryX[0] - Circle.trajectoryX[1]))
-                Circle.speed[0] = Circle.speed[0] > 4 ? Circle.speed[0] / 2 : Circle.speed[0];
-                Circle.speed[0] = Circle.speed[0] > 10 ? 10 : Circle.speed[0];
+                if (!Circle.isBouncing) {
+                    Circle.speed[0] = Math.abs((Circle.trajectoryX[0] - Circle.trajectoryX[1]))
+                    Circle.speed[0] = Circle.speed[0] > 4 ? Circle.speed[0] / 2 : Circle.speed[0];
+                    Circle.speed[0] = Circle.speed[0] > 10 ? 10 : Circle.speed[0];
+                }
+
             } else {
-                Circle.speed[0] = Circle.speed[0] ? Circle.speed[0] : Math.abs((Circle.trajectoryY[0] - Circle.trajectoryY[1]));
+                // Circle.speed[0] = Circle.speed[0] ? Circle.speed[0] : Math.abs((Circle.trajectoryY[0] - Circle.trajectoryY[1]));
             }
             if (Circle.trajectoryX[0] > 0 &&
                 Circle.trajectoryX[1] > 0 &&
@@ -149,7 +154,10 @@ class Circle {
                         Circle.position[0] > 0 ? Circle.position[0] -= Circle.speed[0] : this.bounce('x') + clearInterval(interval);
                     }
                     Circle.element.style.left = Circle.position[0] + 'px'
-                    Circle.speed[0] > 0 ? Circle.speed[0] -= 0.005 : clearInterval(interval);
+                    if (!Circle.unlimitedEnergy) {
+                        console.log(Circle.unlimitedEnergy)
+                        Circle.speed[0] > 0 ? Circle.speed[0] -= 0.005 : (Circle.isBouncing = false) + clearInterval(interval);
+                    }
                 }, 1);
             }
         }
@@ -159,12 +167,14 @@ class Circle {
     static inertiaY() {
         if (!Circle.isHolding) {
             if (Circle.unlimitedEnergy || Circle.speed[1] <= 0) {
-                Circle.speed[1] = Math.abs((Circle.trajectoryY[0] - Circle.trajectoryY[1]))
-                // console.log('speeed ' + Circle.speed[1])
-                Circle.speed[1] = Circle.speed[1] > 4 ? Circle.speed[1] / 2 : Circle.speed[1]
-                Circle.speed[1] = Circle.speed[1] > 10 ? 10 : Circle.speed[1];
+                if (!Circle.isBouncing) {
+                    Circle.speed[1] = Math.abs((Circle.trajectoryY[0] - Circle.trajectoryY[1]) - Circle.speed[1])
+                    Circle.speed[1] = Circle.speed[1] > 4 ? Circle.speed[1] / 2 : Circle.speed[1]
+                    Circle.speed[1] = Circle.speed[1] > 10 ? 10 : Circle.speed[1];
+                }
             } else {
                 Circle.speed[1] = Circle.speed[1] ? Circle.speed[1] : Math.abs((Circle.trajectoryY[0] - Circle.trajectoryY[1]));
+
             }
             // Adquire velocidade baseado nas posições anteriores
             // console.log('attention ' + Circle.speed[1])
@@ -181,7 +191,8 @@ class Circle {
                         Circle.position[1] > 0 ? Circle.position[1] -= Circle.speed[1] : this.bounce('y') + clearInterval(interval);
                     }
                     Circle.element.style.bottom = Circle.position[1] + 'px'
-                    Circle.speed[1] > 0 ? Circle.speed[1] -= 0.005 : console.log("cleared") + clearInterval(interval);
+                    if (!Circle.unlimitedEnergy)
+                        Circle.speed[1] > 0 ? Circle.speed[1] -= 0.005 : (Circle.isBouncing = false) + clearInterval(interval);
                 }, 1);
             }
         } else {
@@ -190,6 +201,7 @@ class Circle {
     }
 
     static bounce(direction) {
+        this.isBouncing = true;
         this.alert()
         // console.log("alert")
         switch (direction) {
