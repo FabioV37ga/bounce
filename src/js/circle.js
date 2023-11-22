@@ -101,17 +101,19 @@ class Circle {
         timeout()
         function timeout() {
             var value = setTimeout(() => {
+                if (Circle.isHolding) {
+                    timeout();
+                    index + 1 > 2 ? index = 0 : index++;
+                    Circle.trajectoryX[2] = Circle.trajectoryX[1] != null ? Circle.trajectoryX[1] : null;
+                    Circle.trajectoryX[1] = Circle.trajectoryX[0] != null ? Circle.trajectoryX[0] : null;
+                    Circle.trajectoryX[0] = Circle.position[0];
 
-                index + 1 > 2 ? index = 0 : index++;
-                Circle.trajectoryX[2] = Circle.trajectoryX[1] != null ? Circle.trajectoryX[1] : null;
-                Circle.trajectoryX[1] = Circle.trajectoryX[0] != null ? Circle.trajectoryX[0] : null;
-                Circle.trajectoryX[0] = Circle.position[0];
+                    Circle.trajectoryY[2] = Circle.trajectoryY[1] != null ? Circle.trajectoryY[1] : null;
+                    Circle.trajectoryY[1] = Circle.trajectoryY[0] != null ? Circle.trajectoryY[0] : null;
+                    Circle.trajectoryY[0] = Circle.position[1];
+                }
 
-                Circle.trajectoryY[2] = Circle.trajectoryY[1] != null ? Circle.trajectoryY[1] : null;
-                Circle.trajectoryY[1] = Circle.trajectoryY[0] != null ? Circle.trajectoryY[0] : null;
-                Circle.trajectoryY[0] = Circle.position[1];
 
-                Circle.isHolding ? timeout() : null;
 
             }, 10);
             // console.log(Circle.trajectoryX)
@@ -122,6 +124,7 @@ class Circle {
 
         if (!Circle.isHolding) {
             // Adquire velocidade baseado nas posições anteriores
+            console.log(Circle.trajectoryX)
             var speed = Math.abs((Circle.trajectoryX[0] - Circle.trajectoryX[1]))
             speed = speed > 4 ? speed / 2 : speed;
             speed = speed > 10 ? 10 : speed;
